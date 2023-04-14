@@ -34,7 +34,7 @@ export default class HTTPServerInvoker implements IServerInvoker {
     const server = await this.server.getServer();
     server[serverMethod](`/${methodName}`, async (req, res) => {
       const invokeResponse = await cb({
-        body: JSON.stringify(req.body),
+        body: req.body,
         query: req.originalUrl,
         metadata: {
           contentType: req.headers["content-type"],

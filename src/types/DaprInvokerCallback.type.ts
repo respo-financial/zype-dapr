@@ -21,7 +21,7 @@ export interface DaprInvokerCallbackContent {
   /**
    * The body of invocation request from the response.
    */
-  body?: string;
+  body?: any;
 
   /**
    * In HTTP, this represents the HTTP URL of the request.
