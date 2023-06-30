@@ -3,6 +3,7 @@
   "version": "3.0.0",
   "description": "The Modified Dapr (https://dapr.io) SDK for Node.js",
   "types": "./build/index.d.ts",
+  "main":"./build/index.js",
   "scripts": {
     "test": "npm run test:unit:all && npm run test:e2e:all",
     "test:load": "jest --runInBand --detectOpenHandles",
@@ -34,6 +35,9 @@
     "pretty": "prettier --list-different \"**/*.{ts,tsx,js,jsx,json,md}\"",
     "pretty-fix": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\""
   },
+  "files": [
+    "/build/**/*"
+  ],
   "keywords": [],
   "author": "Xavier Geerinck",
   "license": "ISC",

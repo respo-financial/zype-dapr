@@ -40,7 +40,7 @@ npm run lint
 echo "Running prettier"
 npm run pretty
 echo "Building Library"
-npx tsc --outDir ./build/
+npx tsc
 
 # Prepare Publish
 echo "Preparing Publish"
@@ -48,4 +48,8 @@ cp package.json build/
 cp README.md build/
 
 # Copy Proto Files
+echo "Copying proto files"
 cp -R ./src/proto ./build
+
+echo "packaging"
+npm pack --pack-destination ~
