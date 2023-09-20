@@ -37,8 +37,8 @@ mkdir build/
 # Build Package
 echo "Running eslint"
 npm run lint
-echo "Running prettier"
-npm run pretty
+# echo "Running prettier"
+# npm run pretty
 echo "Building Library"
 npx tsc
 
