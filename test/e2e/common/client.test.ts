@@ -11,9 +11,16 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { CommunicationProtocolEnum, DaprClient, LogLevel } from "../../../src";
-import { expect, describe, it } from "@jest/globals";
+import { randomUUID } from "crypto";
+import {
+  CommunicationProtocolEnum,
+  DaprClient,
+  LogLevel,
+  StateConcurrencyEnum,
+  StateConsistencyEnum,
+} from "../../../src";
 import { sleep } from "../../../src/utils/NodeJS.util";
+import { LockStatus } from "../../../src/types/lock/UnlockResponse";
 
 const daprHost = "127.0.0.1";
 const daprGrpcPort = "50000";
@@ -144,6 +151,74 @@ describe("common/client", () => {
     });
   });
 
+  describe("distributed lock", () => {
+    runIt("should be able to acquire a new lock and unlock", async (client: DaprClient) => {
+      const resourceId = randomUUID();
+      const lock = await client.lock.lock("redislock", resourceId, "owner1", 1000);
+      expect(lock.success).toEqual(true);
+      const unlock = await client.lock.unlock("redislock", resourceId, "owner1");
+      expect(unlock.status).toEqual(LockStatus.Success);
+    });
+
+    runIt("should be not be able to unlock when the lock is not acquired", async (client: DaprClient) => {
+      const resourceId = randomUUID();
+      const unlock = await client.lock.unlock("redislock", resourceId, "owner1");
+      expect(unlock.status).toEqual(LockStatus.LockDoesNotExist);
+    });
+
+    runIt("should be able to acquire a lock after the previous lock is expired", async (client: DaprClient) => {
+      const resourceId = randomUUID();
+      let lock = await client.lock.lock("redislock", resourceId, "owner1", 5);
+      expect(lock.success).toEqual(true);
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      lock = await client.lock.lock("redislock", resourceId, "owner2", 5);
+      expect(lock.success).toEqual(false);
+    });
+
+    runIt(
+      "should not be able to acquire a lock when the same lock is acquired by another owner",
+      async (client: DaprClient) => {
+        const resourceId = randomUUID();
+        const lockOne = await client.lock.lock("redislock", resourceId, "owner1", 5);
+        expect(lockOne.success).toEqual(true);
+        const lockTwo = await client.lock.lock("redislock", resourceId, "owner2", 5);
+        expect(lockTwo.success).toEqual(false);
+      },
+    );
+
+    runIt(
+      "should be able to acquire a lock when a different lock is acquired by another owner",
+      async (client: DaprClient) => {
+        const lockOne = await client.lock.lock("redislock", randomUUID(), "owner1", 5);
+        expect(lockOne.success).toEqual(true);
+        const lockTwo = await client.lock.lock("redislock", randomUUID(), "owner2", 5);
+        expect(lockTwo.success).toEqual(true);
+      },
+    );
+
+    runIt(
+      "should not be able to acquire a lock when that lock is acquired by another owner/process",
+      async (client: DaprClient) => {
+        const resourceId = randomUUID();
+        const lockOne = await client.lock.lock("redislock", resourceId, "owner3", 5);
+        expect(lockOne.success).toEqual(true);
+        const lockTwo = await client.lock.lock("redislock", resourceId, "owner4", 5);
+        expect(lockTwo.success).toEqual(false);
+      },
+    );
+
+    runIt(
+      "should not be able to unlock a lock when that lock is acquired by another owner/process",
+      async (client: DaprClient) => {
+        const resourceId = randomUUID();
+        const lockOne = await client.lock.lock("redislock", resourceId, "owner5", 5);
+        expect(lockOne.success).toEqual(true);
+        const unlock = await client.lock.unlock("redislock", resourceId, "owner6");
+        expect(unlock.status).toEqual(LockStatus.LockBelongsToOthers);
+      },
+    );
+  });
+
   describe("state", () => {
     const stateStoreName = "state-redis";
     const stateStoreMongoDbName = "state-mongodb";
@@ -184,8 +259,8 @@ describe("common/client", () => {
           value: "value-1",
           etag: "1234",
           options: {
-            concurrency: "first-write",
-            consistency: "strong",
+            concurrency: StateConcurrencyEnum.CONCURRENCY_FIRST_WRITE,
+            consistency: StateConsistencyEnum.CONSISTENCY_STRONG,
           },
           metadata: {
             hello: "world",
