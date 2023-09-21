@@ -12,7 +12,7 @@ limitations under the License.
 */
 
 import * as grpc from "@grpc/grpc-js";
-import { InterceptingListener } from "@grpc/grpc-js/build/src/call-stream";
+import { InterceptingListener } from "@grpc/grpc-js/build/src/call-interface";
 import { NextCall } from "@grpc/grpc-js/build/src/client-interceptors";
 import Class from "../../../types/Class";
 import { Settings } from "../../../utils/Settings.util";
