@@ -884,35 +884,6 @@ export namespace UnregisterActorReminderRequest {
     }
 }
 
-export class RenameActorReminderRequest extends jspb.Message { 
-    getActorType(): string;
-    setActorType(value: string): RenameActorReminderRequest;
-    getActorId(): string;
-    setActorId(value: string): RenameActorReminderRequest;
-    getOldName(): string;
-    setOldName(value: string): RenameActorReminderRequest;
-    getNewName(): string;
-    setNewName(value: string): RenameActorReminderRequest;
-
-    serializeBinary(): Uint8Array;
-    toObject(includeInstance?: boolean): RenameActorReminderRequest.AsObject;
-    static toObject(includeInstance: boolean, msg: RenameActorReminderRequest): RenameActorReminderRequest.AsObject;
-    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
-    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-    static serializeBinaryToWriter(message: RenameActorReminderRequest, writer: jspb.BinaryWriter): void;
-    static deserializeBinary(bytes: Uint8Array): RenameActorReminderRequest;
-    static deserializeBinaryFromReader(message: RenameActorReminderRequest, reader: jspb.BinaryReader): RenameActorReminderRequest;
-}
-
-export namespace RenameActorReminderRequest {
-    export type AsObject = {
-        actorType: string,
-        actorId: string,
-        oldName: string,
-        newName: string,
-    }
-}
-
 export class GetActorStateRequest extends jspb.Message { 
     getActorType(): string;
     setActorType(value: string): GetActorStateRequest;
@@ -945,6 +916,9 @@ export class GetActorStateResponse extends jspb.Message {
     getData_asB64(): string;
     setData(value: Uint8Array | string): GetActorStateResponse;
 
+    getMetadataMap(): jspb.Map<string, string>;
+    clearMetadataMap(): void;
+
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): GetActorStateResponse.AsObject;
     static toObject(includeInstance: boolean, msg: GetActorStateResponse): GetActorStateResponse.AsObject;
@@ -958,6 +932,8 @@ export class GetActorStateResponse extends jspb.Message {
 export namespace GetActorStateResponse {
     export type AsObject = {
         data: Uint8Array | string,
+
+        metadataMap: Array<[string, string]>,
     }
 }
 
@@ -1081,6 +1057,23 @@ export namespace InvokeActorResponse {
     }
 }
 
+export class GetMetadataRequest extends jspb.Message { 
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): GetMetadataRequest.AsObject;
+    static toObject(includeInstance: boolean, msg: GetMetadataRequest): GetMetadataRequest.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: GetMetadataRequest, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): GetMetadataRequest;
+    static deserializeBinaryFromReader(message: GetMetadataRequest, reader: jspb.BinaryReader): GetMetadataRequest;
+}
+
+export namespace GetMetadataRequest {
+    export type AsObject = {
+    }
+}
+
 export class GetMetadataResponse extends jspb.Message { 
     getId(): string;
     setId(value: string): GetMetadataResponse;
@@ -1099,6 +1092,26 @@ export class GetMetadataResponse extends jspb.Message {
     getSubscriptionsList(): Array<PubsubSubscription>;
     setSubscriptionsList(value: Array<PubsubSubscription>): GetMetadataResponse;
     addSubscriptions(value?: PubsubSubscription, index?: number): PubsubSubscription;
+    clearHttpEndpointsList(): void;
+    getHttpEndpointsList(): Array<MetadataHTTPEndpoint>;
+    setHttpEndpointsList(value: Array<MetadataHTTPEndpoint>): GetMetadataResponse;
+    addHttpEndpoints(value?: MetadataHTTPEndpoint, index?: number): MetadataHTTPEndpoint;
+
+    hasAppConnectionProperties(): boolean;
+    clearAppConnectionProperties(): void;
+    getAppConnectionProperties(): AppConnectionProperties | undefined;
+    setAppConnectionProperties(value?: AppConnectionProperties): GetMetadataResponse;
+    getRuntimeVersion(): string;
+    setRuntimeVersion(value: string): GetMetadataResponse;
+    clearEnabledFeaturesList(): void;
+    getEnabledFeaturesList(): Array<string>;
+    setEnabledFeaturesList(value: Array<string>): GetMetadataResponse;
+    addEnabledFeatures(value: string, index?: number): string;
+
+    hasActorRuntime(): boolean;
+    clearActorRuntime(): void;
+    getActorRuntime(): ActorRuntime | undefined;
+    setActorRuntime(value?: ActorRuntime): GetMetadataResponse;
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): GetMetadataResponse.AsObject;
@@ -1118,7 +1131,50 @@ export namespace GetMetadataResponse {
 
         extendedMetadataMap: Array<[string, string]>,
         subscriptionsList: Array<PubsubSubscription.AsObject>,
+        httpEndpointsList: Array<MetadataHTTPEndpoint.AsObject>,
+        appConnectionProperties?: AppConnectionProperties.AsObject,
+        runtimeVersion: string,
+        enabledFeaturesList: Array<string>,
+        actorRuntime?: ActorRuntime.AsObject,
     }
+}
+
+export class ActorRuntime extends jspb.Message { 
+    getRuntimeStatus(): ActorRuntime.ActorRuntimeStatus;
+    setRuntimeStatus(value: ActorRuntime.ActorRuntimeStatus): ActorRuntime;
+    clearActiveActorsList(): void;
+    getActiveActorsList(): Array<ActiveActorsCount>;
+    setActiveActorsList(value: Array<ActiveActorsCount>): ActorRuntime;
+    addActiveActors(value?: ActiveActorsCount, index?: number): ActiveActorsCount;
+    getHostReady(): boolean;
+    setHostReady(value: boolean): ActorRuntime;
+    getPlacement(): string;
+    setPlacement(value: string): ActorRuntime;
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): ActorRuntime.AsObject;
+    static toObject(includeInstance: boolean, msg: ActorRuntime): ActorRuntime.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: ActorRuntime, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): ActorRuntime;
+    static deserializeBinaryFromReader(message: ActorRuntime, reader: jspb.BinaryReader): ActorRuntime;
+}
+
+export namespace ActorRuntime {
+    export type AsObject = {
+        runtimeStatus: ActorRuntime.ActorRuntimeStatus,
+        activeActorsList: Array<ActiveActorsCount.AsObject>,
+        hostReady: boolean,
+        placement: string,
+    }
+
+    export enum ActorRuntimeStatus {
+    INITIALIZING = 0,
+    DISABLED = 1,
+    RUNNING = 2,
+    }
+
 }
 
 export class ActiveActorsCount extends jspb.Message { 
@@ -1172,6 +1228,90 @@ export namespace RegisteredComponents {
         type: string,
         version: string,
         capabilitiesList: Array<string>,
+    }
+}
+
+export class MetadataHTTPEndpoint extends jspb.Message { 
+    getName(): string;
+    setName(value: string): MetadataHTTPEndpoint;
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): MetadataHTTPEndpoint.AsObject;
+    static toObject(includeInstance: boolean, msg: MetadataHTTPEndpoint): MetadataHTTPEndpoint.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: MetadataHTTPEndpoint, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): MetadataHTTPEndpoint;
+    static deserializeBinaryFromReader(message: MetadataHTTPEndpoint, reader: jspb.BinaryReader): MetadataHTTPEndpoint;
+}
+
+export namespace MetadataHTTPEndpoint {
+    export type AsObject = {
+        name: string,
+    }
+}
+
+export class AppConnectionProperties extends jspb.Message { 
+    getPort(): number;
+    setPort(value: number): AppConnectionProperties;
+    getProtocol(): string;
+    setProtocol(value: string): AppConnectionProperties;
+    getChannelAddress(): string;
+    setChannelAddress(value: string): AppConnectionProperties;
+    getMaxConcurrency(): number;
+    setMaxConcurrency(value: number): AppConnectionProperties;
+
+    hasHealth(): boolean;
+    clearHealth(): void;
+    getHealth(): AppConnectionHealthProperties | undefined;
+    setHealth(value?: AppConnectionHealthProperties): AppConnectionProperties;
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): AppConnectionProperties.AsObject;
+    static toObject(includeInstance: boolean, msg: AppConnectionProperties): AppConnectionProperties.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: AppConnectionProperties, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): AppConnectionProperties;
+    static deserializeBinaryFromReader(message: AppConnectionProperties, reader: jspb.BinaryReader): AppConnectionProperties;
+}
+
+export namespace AppConnectionProperties {
+    export type AsObject = {
+        port: number,
+        protocol: string,
+        channelAddress: string,
+        maxConcurrency: number,
+        health?: AppConnectionHealthProperties.AsObject,
+    }
+}
+
+export class AppConnectionHealthProperties extends jspb.Message { 
+    getHealthCheckPath(): string;
+    setHealthCheckPath(value: string): AppConnectionHealthProperties;
+    getHealthProbeInterval(): string;
+    setHealthProbeInterval(value: string): AppConnectionHealthProperties;
+    getHealthProbeTimeout(): string;
+    setHealthProbeTimeout(value: string): AppConnectionHealthProperties;
+    getHealthThreshold(): number;
+    setHealthThreshold(value: number): AppConnectionHealthProperties;
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): AppConnectionHealthProperties.AsObject;
+    static toObject(includeInstance: boolean, msg: AppConnectionHealthProperties): AppConnectionHealthProperties.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: AppConnectionHealthProperties, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): AppConnectionHealthProperties;
+    static deserializeBinaryFromReader(message: AppConnectionHealthProperties, reader: jspb.BinaryReader): AppConnectionHealthProperties;
+}
+
+export namespace AppConnectionHealthProperties {
+    export type AsObject = {
+        healthCheckPath: string,
+        healthProbeInterval: string,
+        healthProbeTimeout: string,
+        healthThreshold: number,
     }
 }
 
@@ -2376,5 +2516,22 @@ export namespace PurgeWorkflowRequest {
     export type AsObject = {
         instanceId: string,
         workflowComponent: string,
+    }
+}
+
+export class ShutdownRequest extends jspb.Message { 
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): ShutdownRequest.AsObject;
+    static toObject(includeInstance: boolean, msg: ShutdownRequest): ShutdownRequest.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: ShutdownRequest, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): ShutdownRequest;
+    static deserializeBinaryFromReader(message: ShutdownRequest, reader: jspb.BinaryReader): ShutdownRequest;
+}
+
+export namespace ShutdownRequest {
+    export type AsObject = {
     }
 }

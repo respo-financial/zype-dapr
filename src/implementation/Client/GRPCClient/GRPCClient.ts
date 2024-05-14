@@ -20,6 +20,8 @@ import { Logger } from "../../../logger/Logger";
 import GRPCClientSidecar from "./sidecar";
 import DaprClient from "../DaprClient";
 import { SDK_VERSION } from "../../../version";
+import communicationProtocolEnum from "../../../enum/CommunicationProtocol.enum";
+import { GrpcEndpoint } from "../../../network/GrpcEndpoint";
 
 export default class GRPCClient implements IClient {
   readonly options: DaprClientOptions;
@@ -28,15 +30,35 @@ export default class GRPCClient implements IClient {
   private readonly client: GrpcDaprClient;
   private readonly clientCredentials: grpc.ChannelCredentials;
   private readonly logger: Logger;
+  private readonly grpcClientOptions: Partial<grpc.ClientOptions>;
+  private daprEndpoint: GrpcEndpoint;
 
-  constructor(options: DaprClientOptions) {
-    this.options = options;
+  constructor(options: Partial<DaprClientOptions>) {
+    this.daprEndpoint = this.generateEndpoint(options);
+
+    this.options = {
+      daprHost: this.daprEndpoint.hostname,
+      daprPort: this.daprEndpoint.port,
+      communicationProtocol: communicationProtocolEnum.GRPC,
+      isKeepAlive: options?.isKeepAlive,
+      logger: options?.logger,
+      actor: options?.actor,
+      daprApiToken: options?.daprApiToken,
+      maxBodySizeMb: options?.maxBodySizeMb,
+    };
+
     this.clientCredentials = this.generateCredentials();
+    this.grpcClientOptions = this.generateChannelOptions();
+
     this.logger = new Logger("GRPCClient", "GRPCClient", options.logger);
     this.isInitialized = false;
 
     this.logger.info(`Opening connection to ${this.options.daprHost}:${this.options.daprPort}`);
-    this.client = this.generateClient(this.options.daprHost, this.options.daprPort, this.clientCredentials);
+    this.client = new GrpcDaprClient(
+      this.daprEndpoint.endpoint,
+      this.getClientCredentials(),
+      this.getGrpcClientOptions(),
+    );
   }
 
   async getClient(requiresInitialization = true): Promise<GrpcDaprClient> {
@@ -52,8 +74,36 @@ export default class GRPCClient implements IClient {
     return this.clientCredentials;
   }
 
-  private generateChannelOptions(): Record<string, string | number> {
-    const options: Record<string, string | number> = {};
+  getGrpcClientOptions(): grpc.ClientOptions {
+    return this.grpcClientOptions;
+  }
+
+  private generateEndpoint(options: Partial<DaprClientOptions>): GrpcEndpoint {
+    const host = options?.daprHost ?? Settings.getDefaultHost();
+    const port = options?.daprPort ?? Settings.getDefaultGrpcPort();
+    let uri = `${host}:${port}`;
+
+    if (!(options?.daprHost || options?.daprPort)) {
+      // If neither host nor port are specified, check the endpoint environment variable.
+      const endpoint = Settings.getDefaultGrpcEndpoint();
+      if (endpoint != "") {
+        uri = endpoint;
+      }
+    }
+
+    return new GrpcEndpoint(uri);
+  }
+
+  private generateCredentials(): grpc.ChannelCredentials {
+    if (this.daprEndpoint?.tls) {
+      return grpc.ChannelCredentials.createSsl();
+    }
+    return grpc.ChannelCredentials.createInsecure();
+  }
+
+  private generateChannelOptions(): Partial<grpc.ClientOptions> {
+    // const options: Record<string, string | number> = {};
+    let options: Partial<grpc.ClientOptions> = {};
 
     // See: GRPC_ARG_MAX_SEND_MESSAGE_LENGTH, it is in bytes
     // https://grpc.github.io/grpc/core/group__grpc__arg__keys.html#ga813f94f9ac3174571dd712c96cdbbdc1
@@ -67,20 +117,28 @@ export default class GRPCClient implements IClient {
     // Add user agent
     options["grpc.primary_user_agent"] = "dapr-sdk-js/v" + SDK_VERSION;
 
+    // Add interceptors if we have an API token
+    if (this.options.daprApiToken !== "") {
+      options = {
+        interceptors: [this.generateInterceptors()],
+        ...options,
+      };
+    }
+
     return options;
   }
 
-  private generateClient(host: string, port: string, credentials: grpc.ChannelCredentials): GrpcDaprClient {
-    const options = this.generateChannelOptions();
-    const client = new GrpcDaprClient(`${host}:${port}`, credentials, options);
-
-    return client;
-  }
-
-  // @todo: look into making secure credentials
-  private generateCredentials(): grpc.ChannelCredentials {
-    const credsChannel = grpc.ChannelCredentials.createInsecure();
-    return credsChannel;
+  private generateInterceptors(): (options: any, nextCall: any) => grpc.InterceptingCall {
+    return (options: any, nextCall: any) => {
+      return new grpc.InterceptingCall(nextCall(options), {
+        start: (metadata, listener, next) => {
+          if (metadata.get("dapr-api-token").length == 0) {
+            metadata.add("dapr-api-token", this.options.daprApiToken as grpc.MetadataValue);
+          }
+          next(metadata, listener);
+        },
+      });
+    };
   }
 
   setIsInitialized(isInitialized: boolean): void {
