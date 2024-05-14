@@ -26,11 +26,11 @@ import { PubSubBulkPublishMessage } from "../types/pubsub/PubSubBulkPublishMessa
 import { PubSubBulkPublishApiResponse } from "../types/pubsub/PubSubBulkPublishApiResponse.type";
 import { DaprClientOptions } from "../types/DaprClientOptions";
 import CommunicationProtocolEnum from "../enum/CommunicationProtocol.enum";
-import { Settings } from "./Settings.util";
 import { LoggerOptions } from "../types/logger/LoggerOptions";
 import { StateConsistencyEnum } from "../enum/StateConsistency.enum";
 import { StateConcurrencyEnum } from "../enum/StateConcurrency.enum";
-import { URLSearchParams } from "url";
+import { Settings } from "./Settings.util";
+
 /**
  * Adds metadata to a map.
  * @param map Input map
@@ -253,24 +253,25 @@ function getType(o: any) {
 /**
  * Prepares DaprClientOptions for use by the DaprClient/DaprServer.
  * If the user does not provide a value for a mandatory option, the default value is used.
- * @param clientoptions DaprClientOptions
+ * @param clientOptions DaprClientOptions
  * @param defaultCommunicationProtocol CommunicationProtocolEnum
+ * @param defaultLoggerOptions
  * @returns DaprClientOptions
  */
 export function getClientOptions(
-  clientoptions: Partial<DaprClientOptions> | undefined,
+  clientOptions: Partial<DaprClientOptions> | undefined,
   defaultCommunicationProtocol: CommunicationProtocolEnum,
   defaultLoggerOptions: LoggerOptions | undefined,
-): DaprClientOptions {
-  const clientCommunicationProtocol = clientoptions?.communicationProtocol ?? defaultCommunicationProtocol;
+): Partial<DaprClientOptions> {
+  const clientCommunicationProtocol = clientOptions?.communicationProtocol ?? defaultCommunicationProtocol;
   return {
-    daprHost: clientoptions?.daprHost ?? Settings.getDefaultHost(),
-    daprPort: clientoptions?.daprPort ?? Settings.getDefaultPort(clientCommunicationProtocol),
+    daprHost: clientOptions?.daprHost,
+    daprPort: clientOptions?.daprPort,
     communicationProtocol: clientCommunicationProtocol,
-    isKeepAlive: clientoptions?.isKeepAlive,
-    logger: clientoptions?.logger ?? defaultLoggerOptions,
-    actor: clientoptions?.actor,
-    daprApiToken: clientoptions?.daprApiToken,
-    maxBodySizeMb: clientoptions?.maxBodySizeMb,
+    isKeepAlive: clientOptions?.isKeepAlive,
+    logger: clientOptions?.logger ?? defaultLoggerOptions,
+    actor: clientOptions?.actor,
+    daprApiToken: clientOptions?.daprApiToken ?? Settings.getDefaultApiToken(),
+    maxBodySizeMb: clientOptions?.maxBodySizeMb,
   };
 }
