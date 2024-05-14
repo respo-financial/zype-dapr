@@ -317,7 +317,9 @@ proto.dapr.proto.placement.v1.PlacementTables.prototype.toObject = function(opt_
 proto.dapr.proto.placement.v1.PlacementTables.toObject = function(includeInstance, msg) {
   var f, obj = {
     entriesMap: (f = msg.getEntriesMap()) ? f.toObject(includeInstance, proto.dapr.proto.placement.v1.PlacementTable.toObject) : [],
-    version: jspb.Message.getFieldWithDefault(msg, 2, "")
+    version: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    apiLevel: jspb.Message.getFieldWithDefault(msg, 3, 0),
+    replicationFactor: jspb.Message.getFieldWithDefault(msg, 4, 0)
   };
 
   if (includeInstance) {
@@ -364,6 +366,14 @@ proto.dapr.proto.placement.v1.PlacementTables.deserializeBinaryFromReader = func
       var value = /** @type {string} */ (reader.readString());
       msg.setVersion(value);
       break;
+    case 3:
+      var value = /** @type {number} */ (reader.readUint32());
+      msg.setApiLevel(value);
+      break;
+    case 4:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setReplicationFactor(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -401,6 +411,20 @@ proto.dapr.proto.placement.v1.PlacementTables.serializeBinaryToWriter = function
   if (f.length > 0) {
     writer.writeString(
       2,
+      f
+    );
+  }
+  f = message.getApiLevel();
+  if (f !== 0) {
+    writer.writeUint32(
+      3,
+      f
+    );
+  }
+  f = message.getReplicationFactor();
+  if (f !== 0) {
+    writer.writeInt64(
+      4,
       f
     );
   }
@@ -444,6 +468,42 @@ proto.dapr.proto.placement.v1.PlacementTables.prototype.getVersion = function() 
  */
 proto.dapr.proto.placement.v1.PlacementTables.prototype.setVersion = function(value) {
   return jspb.Message.setProto3StringField(this, 2, value);
+};
+
+
+/**
+ * optional uint32 api_level = 3;
+ * @return {number}
+ */
+proto.dapr.proto.placement.v1.PlacementTables.prototype.getApiLevel = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.dapr.proto.placement.v1.PlacementTables} returns this
+ */
+proto.dapr.proto.placement.v1.PlacementTables.prototype.setApiLevel = function(value) {
+  return jspb.Message.setProto3IntField(this, 3, value);
+};
+
+
+/**
+ * optional int64 replication_factor = 4;
+ * @return {number}
+ */
+proto.dapr.proto.placement.v1.PlacementTables.prototype.getReplicationFactor = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.dapr.proto.placement.v1.PlacementTables} returns this
+ */
+proto.dapr.proto.placement.v1.PlacementTables.prototype.setReplicationFactor = function(value) {
+  return jspb.Message.setProto3IntField(this, 4, value);
 };
 
 
@@ -744,7 +804,9 @@ proto.dapr.proto.placement.v1.Host.toObject = function(includeInstance, msg) {
     port: jspb.Message.getFieldWithDefault(msg, 2, 0),
     load: jspb.Message.getFieldWithDefault(msg, 3, 0),
     entitiesList: (f = jspb.Message.getRepeatedField(msg, 4)) == null ? undefined : f,
-    id: jspb.Message.getFieldWithDefault(msg, 5, "")
+    id: jspb.Message.getFieldWithDefault(msg, 5, ""),
+    pod: jspb.Message.getFieldWithDefault(msg, 6, ""),
+    apiLevel: jspb.Message.getFieldWithDefault(msg, 7, 0)
   };
 
   if (includeInstance) {
@@ -800,6 +862,14 @@ proto.dapr.proto.placement.v1.Host.deserializeBinaryFromReader = function(msg, r
     case 5:
       var value = /** @type {string} */ (reader.readString());
       msg.setId(value);
+      break;
+    case 6:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setPod(value);
+      break;
+    case 7:
+      var value = /** @type {number} */ (reader.readUint32());
+      msg.setApiLevel(value);
       break;
     default:
       reader.skipField();
@@ -862,6 +932,20 @@ proto.dapr.proto.placement.v1.Host.serializeBinaryToWriter = function(message, w
   if (f.length > 0) {
     writer.writeString(
       5,
+      f
+    );
+  }
+  f = message.getPod();
+  if (f.length > 0) {
+    writer.writeString(
+      6,
+      f
+    );
+  }
+  f = message.getApiLevel();
+  if (f !== 0) {
+    writer.writeUint32(
+      7,
       f
     );
   }
@@ -974,6 +1058,42 @@ proto.dapr.proto.placement.v1.Host.prototype.getId = function() {
  */
 proto.dapr.proto.placement.v1.Host.prototype.setId = function(value) {
   return jspb.Message.setProto3StringField(this, 5, value);
+};
+
+
+/**
+ * optional string pod = 6;
+ * @return {string}
+ */
+proto.dapr.proto.placement.v1.Host.prototype.getPod = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 6, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.dapr.proto.placement.v1.Host} returns this
+ */
+proto.dapr.proto.placement.v1.Host.prototype.setPod = function(value) {
+  return jspb.Message.setProto3StringField(this, 6, value);
+};
+
+
+/**
+ * optional uint32 api_level = 7;
+ * @return {number}
+ */
+proto.dapr.proto.placement.v1.Host.prototype.getApiLevel = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 7, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.dapr.proto.placement.v1.Host} returns this
+ */
+proto.dapr.proto.placement.v1.Host.prototype.setApiLevel = function(value) {
+  return jspb.Message.setProto3IntField(this, 7, value);
 };
 
 
